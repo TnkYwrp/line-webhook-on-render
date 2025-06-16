@@ -9,7 +9,7 @@ app.post("/webhook", async (req, res) => {
   res.sendStatus(200);
 
   const events = req.body?.events || [];
-  // console.log("📩 Events:", JSON.stringify(events, null, 2));
+  console.log("📩 Events:", JSON.stringify(events, null, 2));
 
   for (const event of events) {
     if (event.type === "join") {
@@ -46,6 +46,40 @@ app.post("/webhook", async (req, res) => {
         );
       }
     }
+  }
+});
+
+// ✅ ENDPOINT ที่หน้าเว็บจะยิงมา
+app.post("/api/notify-payment", async (req, res) => {
+  const { name, month, status } = req.body;
+
+  if (!name || !month || typeof status !== "boolean") {
+    return res.status(400).json({ message: "ข้อมูลไม่ครบ" });
+  }
+
+  const text = `💬 แจ้งเตือน\n${name} ${
+    status ? "✅ ชำระเงินแล้ว" : "❌ ยังไม่ชำระเงิน"
+  } ประจำเดือน ${month}`;
+
+  try {
+    await axios.post(
+      "https://api.line.me/v2/bot/message/push",
+      {
+        to: process.env.LINE_GROUP_ID, // ✅ Group ID ที่ได้จาก event.source.groupId
+        messages: [{ type: "text", text }],
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.LINE_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    res.json({ message: "ส่งข้อความสำเร็จ" });
+  } catch (err) {
+    console.error("❌ ส่งข้อความล้มเหลว:", err.response?.data || err.message);
+    res.status(500).json({ message: "ส่งข้อความล้มเหลว" });
   }
 });
 
