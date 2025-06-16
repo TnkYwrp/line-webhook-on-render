@@ -1,0 +1,17 @@
+{
+  "name": "line-webhook-on-render",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@line/bot-sdk": "^10.0.0",
+    "axios": "^1.10.0",
+    "express": "^5.1.0"
+  }
+}
