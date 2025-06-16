@@ -9,9 +9,7 @@ const config = {
   channelAccessToken: process.env.LINE_TOKEN,
 };
 
-// ❗ ห้ามมี express.json()
-
-app.post("/webhook", middleware(config), async (req, res) => {
+app.post("/webhook", async (req, res) => {
   const events = req.body.events || [];
 
   for (const ev of events) {
