@@ -1,4 +1,3 @@
-import "dotenv/config";
 import express from "express";
 import { middleware } from "@line/bot-sdk";
 import axios from "axios";
@@ -9,6 +8,7 @@ app.use(express.json()); // ✅ เพิ่มบรรทัดนี้เพ
 
 const config = {
   channelSecret: process.env.LINE_SECRET,
+  channelAccessToken: process.env.LINE_TOKEN,
 };
 
 app.post("/webhook", middleware(config), async (req, res) => {
