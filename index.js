@@ -5,18 +5,17 @@ import axios from "axios";
 
 const app = express();
 
-// กำหนดค่าจาก LINE Developer Console
+app.use(express.json()); // ✅ เพิ่มบรรทัดนี้เพื่อให้ req.body ไม่เป็น undefined
+
 const config = {
   channelSecret: process.env.LINE_SECRET,
 };
 
-// ใช้ LINE middleware
 app.post("/webhook", middleware(config), async (req, res) => {
   const events = req.body.events || [];
 
   for (const ev of events) {
     if (ev.type === "join") {
-      // ตอบกลับตอนเข้ากลุ่ม
       await axios.post(
         "https://api.line.me/v2/bot/message/reply",
         {
@@ -41,6 +40,5 @@ app.post("/webhook", middleware(config), async (req, res) => {
   res.sendStatus(200);
 });
 
-// เปิดเซิร์ฟเวอร์
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on port ${port}`));
