@@ -1,6 +1,7 @@
 {
   "name": "line-webhook-on-render",
   "version": "1.0.0",
+  "type": "module",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -12,6 +13,7 @@
   "dependencies": {
     "@line/bot-sdk": "^10.0.0",
     "axios": "^1.10.0",
+    "dotenv": "^16.5.0",
     "express": "^5.1.0"
   }
 }
