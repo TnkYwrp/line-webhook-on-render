@@ -4,12 +4,12 @@ import axios from "axios";
 
 const app = express();
 
-app.use(express.json()); // ✅ เพิ่มบรรทัดนี้เพื่อให้ req.body ไม่เป็น undefined
-
 const config = {
   channelSecret: process.env.LINE_SECRET,
   channelAccessToken: process.env.LINE_TOKEN,
 };
+
+// ❗ ห้ามมี express.json()
 
 app.post("/webhook", middleware(config), async (req, res) => {
   const events = req.body.events || [];
