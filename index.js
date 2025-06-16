@@ -3,19 +3,28 @@ import express from "express";
 import axios from "axios";
 
 const app = express();
-app.use(express.json()); // สำคัญมาก ไม่งั้น req.body จะกลายเป็น undefined
+app.use(express.json());
 
 app.post("/webhook", async (req, res) => {
-  try {
-    const events = req.body.events || [];
-    console.log("📩 Events:", events);
+  // ✅ ตอบ LINE ทันที เพื่อป้องกัน timeout และโดนเตะ
+  res.sendStatus(200);
 
-    for (const event of events) {
-      if (event.type === "join") {
+  const events = req.body?.events || [];
+  console.log("📩 Events:", JSON.stringify(events, null, 2));
+
+  for (const event of events) {
+    if (event.type === "join") {
+      try {
+        const replyToken = event.replyToken;
+        if (!replyToken) {
+          console.warn("⚠️ No replyToken in event");
+          continue;
+        }
+
         await axios.post(
           "https://api.line.me/v2/bot/message/reply",
           {
-            replyToken: event.replyToken,
+            replyToken,
             messages: [
               {
                 type: "text",
@@ -30,13 +39,14 @@ app.post("/webhook", async (req, res) => {
             },
           }
         );
+        console.log("✅ ส่งข้อความสำเร็จ");
+      } catch (error) {
+        console.error(
+          "❌ LINE reply error:",
+          error.response?.data || error.message
+        );
       }
     }
-
-    res.sendStatus(200);
-  } catch (error) {
-    console.error("❌ Error in webhook:", error.message);
-    res.sendStatus(500);
   }
 });
 
