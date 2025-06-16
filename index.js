@@ -20,16 +20,59 @@ app.post("/webhook", async (req, res) => {
           continue;
         }
 
+        const flexMessage = {
+          type: "flex",
+          altText: "แจ้งเตือนการชำระเงิน",
+          contents: {
+            type: "bubble",
+            size: "micro",
+            body: {
+              type: "box",
+              layout: "vertical",
+              spacing: "sm",
+              contents: [
+                {
+                  type: "text",
+                  text: "💬 แจ้งเตือนการชำระเงิน",
+                  weight: "bold",
+                  size: "sm",
+                  color: status ? "#1DB446" : "#FF3B30",
+                },
+                {
+                  type: "text",
+                  text: `ชื่อ: ${name}`,
+                  size: "sm",
+                },
+                {
+                  type: "text",
+                  text: `สถานะ: ${
+                    status ? "✅ ชำระเงินแล้ว" : "❌ ยังไม่ชำระเงิน"
+                  }`,
+                  size: "sm",
+                  color: status ? "#1DB446" : "#FF3B30",
+                },
+                {
+                  type: "text",
+                  text: `เดือน: ${month}`,
+                  size: "sm",
+                },
+              ],
+            },
+          },
+        };
+
         await axios.post(
           "https://api.line.me/v2/bot/message/reply",
           {
             replyToken,
-            messages: [
-              {
-                type: "text",
-                text: "บอทเข้ากลุ่มแล้วครับ! 🚀",
-              },
-            ],
+            messages: [flexMessage],
+
+            // messages: [
+            //   {
+            //     type: "text",
+            //     text: "บอทเข้ากลุ่มแล้วครับ! 🚀",
+            //   },
+            // ],
           },
           {
             headers: {
