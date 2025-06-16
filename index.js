@@ -6,11 +6,10 @@ const app = express();
 app.use(express.json());
 
 app.post("/webhook", async (req, res) => {
-  // ✅ ตอบ LINE ทันที เพื่อป้องกัน timeout และโดนเตะ
   res.sendStatus(200);
 
   const events = req.body?.events || [];
-  console.log("📩 Events:", JSON.stringify(events, null, 2));
+  // console.log("📩 Events:", JSON.stringify(events, null, 2));
 
   for (const event of events) {
     if (event.type === "join") {
