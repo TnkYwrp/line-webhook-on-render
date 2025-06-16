@@ -1,42 +1,46 @@
+import "dotenv/config";
 import express from "express";
-import { middleware } from "@line/bot-sdk";
 import axios from "axios";
 
 const app = express();
-
-const config = {
-  channelSecret: process.env.LINE_SECRET,
-  channelAccessToken: process.env.LINE_TOKEN,
-};
+app.use(express.json()); // สำคัญมาก ไม่งั้น req.body จะกลายเป็น undefined
 
 app.post("/webhook", async (req, res) => {
-  const events = req.body.events || [];
+  try {
+    const events = req.body.events || [];
+    console.log("📩 Events:", events);
 
-  for (const ev of events) {
-    if (ev.type === "join") {
-      await axios.post(
-        "https://api.line.me/v2/bot/message/reply",
-        {
-          replyToken: ev.replyToken,
-          messages: [
-            {
-              type: "text",
-              text: "บอทพร้อมให้บริการในกลุ่มนี้แล้วครับ 🚀",
-            },
-          ],
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${process.env.LINE_TOKEN}`,
-            "Content-Type": "application/json",
+    for (const event of events) {
+      if (event.type === "join") {
+        await axios.post(
+          "https://api.line.me/v2/bot/message/reply",
+          {
+            replyToken: event.replyToken,
+            messages: [
+              {
+                type: "text",
+                text: "บอทเข้ากลุ่มแล้วครับ! 🚀",
+              },
+            ],
           },
-        }
-      );
+          {
+            headers: {
+              Authorization: `Bearer ${process.env.LINE_TOKEN}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+      }
     }
-  }
 
-  res.sendStatus(200);
+    res.sendStatus(200);
+  } catch (error) {
+    console.error("❌ Error in webhook:", error.message);
+    res.sendStatus(500);
+  }
 });
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`Listening on port ${port}`));
+app.listen(port, () => {
+  console.log(`🚀 Server ready at http://localhost:${port}`);
+});
